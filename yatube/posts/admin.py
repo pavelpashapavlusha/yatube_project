@@ -4,12 +4,17 @@ from .models import Post, Group
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'text', 'pub_date', 'author', 'group')
+    list_display = ('pk', 'text', 'pub_date', 'author', 'group',)
+    list_editable = ('group',)
     search_fields = ('text',)
     list_filter = ('pub_date',)
-    group = ('blank=True, null=True, on_delete=models.CASCADE')
     empty_value_display = '-пусто'
 
-
 admin.site.register(Post, PostAdmin)
-admin.site.register(Group)
+
+class GroupAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'title', 'slug',)
+    search_fields = ('description',)
+    list_filter = ('slug',)
+
+admin.site.register(Group)    
