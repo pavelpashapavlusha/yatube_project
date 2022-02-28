@@ -10,11 +10,6 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ('pub_date',)
     empty_value_display = '-пусто'
 
+
 admin.site.register(Post, PostAdmin)
-
-class GroupAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'title', 'slug',)
-    search_fields = ('description',)
-    list_filter = ('slug',)
-
-admin.site.register(Group)    
+admin.site.register(Group)
