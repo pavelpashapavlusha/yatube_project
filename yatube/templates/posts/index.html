@@ -1,51 +1,23 @@
 {% extends 'base.html' %}
-{% block content %}
-  {% for post in posts %}     
-        <h1>Главная страница</h1>
-        <article>
-          <ul>
-            <li>
-              Автор: {{ post.author.get_full_name }}
-            </li>
-            <li>
-              Дата публикации: {{ post.pub_date|date:"d E Y" }}
-            </li>
-          </ul>
-          <p>{{ post.text }}</p>   
-          {% if post.group %}   
-            <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-          {% endif %}
-        </article> 
-        <hr>
-        <article>
-          <ul>
-            <li>
-              Автор: {{ post.author.get_full_name }}
-            </li>
-            <li>
-              Дата публикации: {{ post.pub_date|date:"d E Y" }}
-            </li>
-          </ul>
-          <p>{{ post.text }}</p>   
-          {% if post.group %}   
-            <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-          {% endif %}
-        </article> 
-        <hr>
-        <article>
-          <ul>
-            <li>
-              Автор: {{ post.author.get_full_name }}
-            </li>
-            <li>
-              Дата публикации: {{ post.pub_date|date:"d E Y" }}
-            </li>
-          </ul>
-          <p>{{ post.text }}</p>   
-          {% if post.group %}   
-            <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-          {% endif %}
-        </article>   
-    {% if not forloop.last %}<hr>{% endif %}
-  {% endfor %}  
-{% endblock %}
+{% load static %}
+{% block title %}Последние обновления на сайте{% endblock %} 
+  {% block content %}
+    <h1>Главная страница проекта Yatube}</h1>
+    {% for post in posts %}
+      <article>
+        <ul>
+          <li>
+            Автор: {{ post.author.get_full_name }}
+          </li>
+          <li>
+            Дата публикации: {{ post.pub_date|date:"d E Y" }}
+          </li>
+        </ul>
+        <p>{{ post.text }}</p>
+        {% if post.group %}
+        <a href="{% url 'posts:group_list' post.group.slug %}">Все записи группы</a>         
+      </article>
+      {% endif %}
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}  
+  {% endblock %}

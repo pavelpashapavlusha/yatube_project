@@ -1,53 +1,35 @@
-{% extends 'base.html' %} 
-{% block content %}  
-  {% for post in posts %}
-        <h1>Дополнительная информация</h1>
-        <p>
-          {{ group.title }}
-        </p>
-        <article>
-          <ul>
-            <li>
-              Автор: {{ post.author.get_full_name }}
-            </li>
-            <li>
-              Дата публикации: {{ post.pub_date|date:"d E Y" }}
-            </li>
-          </ul>
-          <p>{{ group.description }}</p>   
-          {% if post.group %}   
-            <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-          {% endif %}
-        </article>
-        <article>
-          <ul>
-            <li>
-              Автор: {{ post.author.get_full_name }}
-            </li>
-            <li>
-              Дата публикации: {{ post.pub_date|date:"d E Y" }}
-            </li>
-          </ul>
-          <p>{{ group.description3 }}</p>   
-          {% if post.group %}   
-            <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-          {% endif %}
-        </article>
-        <hr>
-        <article>
-          <ul>
-            <li>
-              Автор: {{ post.author.get_full_name }}
-            </li>
-            <li>
-              Дата публикации: {{ post.pub_date|date:"d E Y" }}
-            </li>
-          </ul>
-          <p>{{ group.description }}</p>   
-          {% if post.group %}   
-            <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-          {% endif %}
-        </article>
-    {% if not forloop.last %}<hr>{% endif %}
-  {% endfor %}  
-{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Записи сообщества {{ group.title }} {% endblock %} 
+  {% block content %}
+    <h1>{{ group.title }}</h1>
+    <p>
+      {{ group.description }}
+    </p>
+    {% for post in posts %}
+      <article>
+        <ul>
+          <li>
+            Автор: {{ post.author.get_full_name }}
+          </li>
+          <li>
+            Дата публикации: {{ post.pub_date|date:"d E Y" }}
+          </li>
+        </ul>
+        <p>{{ post.text }}</p>
+        <a href="{% url 'posts:group_list' post.group.slug %}">Все записи группы {{ group.title }}</a>         
+      </article>
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}  
+  {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
