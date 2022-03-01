@@ -21,7 +21,7 @@ class Post(models.Model):
         on_delete=models.CASCADE,
         related_name='posts'
     )
-    group = models.ForeignKey(
+    group = models.SlugField(
         Group,
         blank=True,
         null=True,
