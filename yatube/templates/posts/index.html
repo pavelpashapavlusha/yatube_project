@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block title %}Последние обновления на сайте{% endblock %} 
   {% block content %}
     <h1>Главная страница проекта Yatube</h1>
     {% for post in posts %}
-      <article>
         <ul>
           <li>
             Автор: {{ post.author.get_full_name }}
@@ -17,7 +15,6 @@
         {% if post.group %}
         <a href="{% url 'posts:groups' post.group.slug %}">Все записи группы</a>         
         {% endif %}
-      </article>
       {% if not forloop.last %}<hr>{% endif %}
     {% endfor %}  
 {% endblock %}
