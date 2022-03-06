@@ -1,19 +1,23 @@
 {% extends 'base.html' %}
-{% block content %}
-<h1>{{ title }}</h1>
-{% for post in posts %}
-  <article>
-    <ul>
-      <li>
-        Автор: {{ post.author.get_full_name }}
-      </li>
-      <li>
-        Дата публикации: {{ post.pub_date|date:"d E Y" }}
-      </li>
-    </ul>
+{% load static %}
+{% block title %} Записи сообщества {{ group }} {% endblock %} 
+  {% block content %}
+    <h1>{{ group.title }}</h1>
     <p>
-      {{ post.text }}
+      {{ group.description }}
     </p>
-  </article>
-{% endfor %}
-{% endblock %}
+    {% for post in posts %}
+      <article>
+        <ul>
+          <li>
+            Автор: {{ post.author.get_full_name }}
+          </li>
+          <li>
+            Дата публикации: {{ post.pub_date|date:"d E Y" }}
+          </li>
+        </ul>
+        <p>{{ post.text }}</p>         
+      </article>
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}  
+  {% endblock %}
