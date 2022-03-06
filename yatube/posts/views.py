@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404
-long = 10
 from .models import Post, Group
-
+long = 10
 
 
 def index(request):
