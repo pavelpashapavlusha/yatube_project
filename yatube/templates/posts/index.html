@@ -2,7 +2,7 @@
 {% block title %}Последние обновления на сайте{% endblock %} 
 {% block content %}
     <h1>Главная страница проекта Yatube</h1>
-    {% for post in posts %}
+    {% for post in page_obj %}
         <ul>
           <li>
             Автор: {{ post.author.get_full_name }}
@@ -16,5 +16,8 @@
         <a href="{% url 'posts:groups' post.group.slug %}">Все записи группы</a>         
         {% endif %}
       {% if not forloop.last %}<hr>{% endif %}
-    {% endfor %}  
+    {% endfor %}
+
+{% include 'includes/paginator.html' %}  
+
 {% endblock %}
