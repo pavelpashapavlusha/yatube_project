@@ -25,9 +25,9 @@
       {% endif %}" href="<!--  -->">Новая запись</a>
       </li>
       <li class="nav-item"> 
-        <a class="nav-link link-light {% if request.resolver_match.view_name  == '' %}
+        <a class="nav-link link-light {% if request.resolver_match.view_name  == %}
         active
-      {% endif %}" href="{% url '' %}">Изменить пароль</a>
+      {% endif %}" href="{% url %}">Изменить пароль</a>
       </li>
       <li class="nav-item"> 
         <a class="nav-link link-light {% if request.resolver_match.view_name  == 'about:logout' %}
