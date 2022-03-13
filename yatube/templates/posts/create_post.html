@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %} Новый пост {% endblock %} 
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 p-5">
+            <div class="card">
+                <div class="card-header">
+                    {% if is_edit %}
+                      <a class="nav-link" href="{% url 'posts:post_edit' post.id %}">Редактировать</a>
+                    {% else %}
+                      <a class="nav-link" href="{% url 'posts:post_create' post.id %}">Опубликовать</a>
+                    {% endif %}
+                </div>
+                <div class="card-body"
+                    {% if is_edit %}
+                      <form method="post" action="{% url 'posts:post_detail' %}">
+                    {% else %}
+                      <form method="post" action="{% url 'posts:post_create' %}">
+                    {% endif %}
+                    {% csrf_token %}
+                    {{ form }}
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">
+                            {% if is_edit %}
+                              Сохранить
+                            {% else %}
+                              Добавить
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
