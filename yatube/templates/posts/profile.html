@@ -14,7 +14,7 @@
            <article>
             <ul>
               <li>
-                Автор: {{ author_name }}
+                Автор: {{ author.get_full_name }}
               </li>
               <li>
                 Дата публикации: {{ post.pub_date|date:"d E Y" }} 
@@ -28,6 +28,5 @@
         {% endif %}        
         {% if not forloop.last %}<hr>{% endif %}
         {% endfor %}
-        {% include 'includes/paginator.html' %}
     </div>
 {% endblock %}

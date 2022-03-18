@@ -7,18 +7,18 @@
             <div class="card">
                 <div class="card-header">
                     {% if is_edit %}
-                      <a class="nav-link" href="{% url 'posts:post_edit' post.id %}">Редактировать</a>
+                      Редактировать
                     {% else %}
-                      <a class="nav-link" href="{% url 'posts:post_create' post.id %}">Опубликовать</a>
+                      Опубликовать
                     {% endif %}
                 </div>
                 <div class="card-body"
                     {% if is_edit %}
-                      <form method="post" action="{% url 'posts:post_detail' %}">
+                      <form method="post" action="{% url 'posts:post_edit' post.id %}">
                     {% else %}
                       <form method="post" action="{% url 'posts:post_create' %}">
                     {% endif %}
-                    {% csrf_token %}
+                    {% csrf_token %} 
                     {{ form }}
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary">
