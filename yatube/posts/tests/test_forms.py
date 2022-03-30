@@ -48,7 +48,7 @@ class PostFormTests(TestCase):
             ('posts:profile'), kwargs={'username': 'author'})
         )
         # Проверяем, увеличилось ли число постов
-        self.assertEqual(Post.objects.count(), posts_count+1)
+        self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertTrue(
             Post.objects.filter(
                 author=self.user1,
