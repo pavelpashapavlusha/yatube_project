@@ -6,6 +6,7 @@ from django.core.cache import cache
 
 from ..models import Group, Post, User
 
+
 class PostsViewsTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -82,7 +83,7 @@ class PostsViewsTests(TestCase):
         expect = list(paginator.get_page(1).object_list)
         self.assertEqual(
             response.context['page_obj'].object_list, expect)
-    
+
     def test_create_post_page_show_correct_context(self):
         """Шаблон create_post сформирован с правильным контекстом."""
         response = self.authorized_client.get(reverse(
@@ -95,7 +96,7 @@ class PostsViewsTests(TestCase):
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
                 self.assertIsInstance(form_field, expected)
-    
+
     def test_post_edit_page_show_correct_context(self):
         """Шаблон post_edit сформирован с правильным контекстом."""
         response = self.authorized_client_author.get(reverse(
@@ -108,7 +109,7 @@ class PostsViewsTests(TestCase):
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
                 self.assertIsInstance(form_field, expected)
-    
+
     def test_index_page_contains_correct_context(self):
         """Доп. проверка страниц на содержание указанного поста."""
         response = self.guest_client.get(reverse(
@@ -138,7 +139,7 @@ class CacheTest(TestCase):
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
-    
+
     def test_cache(self):
         test_post = Post.objects.create(
             text='test',

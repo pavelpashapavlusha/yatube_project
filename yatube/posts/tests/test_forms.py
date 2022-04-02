@@ -89,10 +89,10 @@ class PostFormTest(TestCase):
                 text='Тестовый текст',
                 group=self.group.id
             ).exists())
-    
-    
+
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
+
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostFormImage(TestCase):
@@ -141,14 +141,15 @@ class PostFormImage(TestCase):
         )
         self.assertTrue(
             Post.objects.filter(
-                text= 'Тестовый текст',
-                image='posts/small.gif'
+                text='Тестовый текст',
+                image='posts/small.gif',
             ).exists()
         )
         self.assertRedirects(
             response, reverse('posts:profile', args=[self.user.username])
         )
         self.assertEqual(Post.objects.count(), posts_count + 1)
+
 
 class PostCommentTest(TestCase):
     @classmethod
@@ -169,13 +170,13 @@ class PostCommentTest(TestCase):
         self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
-    
+
     def test_comment_appears_in_post(self):
         form = CommentForm(data={
             'text': 'comment',
         })
         self.assertTrue(form.is_valid())
-        
+
         response = self.authorized_client.post(
             reverse('posts:add_comment', args=[self.post.pk]),
             data=form.data,

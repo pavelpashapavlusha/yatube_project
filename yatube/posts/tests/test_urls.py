@@ -32,13 +32,13 @@ class PostURLTests(TestCase):
         self.authorized_client = Client()
         # Авторизуем пользователя
         self.authorized_client.force_login(self.user)
-    
+
     def test_pages_urls_for_guest_users(self):
         for address in PostURLTests.urls:
             with self.subTest(address=address):
                 response = self.guest_client.get(address)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
-    
+
     def test_pages_urls_for_authorized_users(self):
         for address in PostURLTests.urls:
             with self.subTest(address=address):
@@ -74,7 +74,7 @@ class PostURLTests(TestCase):
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         templates_url_names = {
-             '/': 'posts/index.html',
+            '/': 'posts/index.html',
             f'/group/{self.group.slug}/': 'posts/group_list.html',
             f'/profile/{self.post.author}/': 'posts/profile.html',
             f'/posts/{self.post.id}/': 'posts/post_detail.html',

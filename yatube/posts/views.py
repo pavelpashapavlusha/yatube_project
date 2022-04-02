@@ -58,7 +58,7 @@ def post_detail(request, post_id):
         'this_user': this_user,
         'form': form,
         'comments': comments,
-        }
+    }
     return render(request, 'posts/post_detail.html', context)
 
 
@@ -92,6 +92,7 @@ def post_edit(request, post_id):
         'is_edit': True,
     }
     return render(request, 'posts/create_post.html', context)
+
 
 @login_required
 def add_comment(request, post_id):
