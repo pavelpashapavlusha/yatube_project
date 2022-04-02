@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load thumbnail %}
 
 
 {% block title %}
@@ -22,6 +23,9 @@
             </ul>
             <p>{{ post.text }}</p>
             <a href="{% url 'posts:post_detail' post.pk %}">подробная информация </a>
+            {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+            <img class="card-img my-2" src="{{ im.url }}">
+            {% endthumbnail %}
            </article>
         {% if post.group %}      
            <a href="{% url 'posts:groups' post.group.slug %}">все записи группы</a>

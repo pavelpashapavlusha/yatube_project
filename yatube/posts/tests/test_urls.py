@@ -1,18 +1,6 @@
-from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
-from posts.models import Group, Post
-
-User = get_user_model()
-
-
-class StaticURLTests(TestCase):
-    def setUp(self):
-        self.guest_client = Client()
-
-    def test_homepage(self):
-        response = self.guest_client.get('/')
-        # Утверждаем, что для прохождения теста код должен быть равен 200
-        self.assertEqual(response.status_code, 200)
+from posts.models import Group, Post, User
+from http import HTTPStatus
 
 
 class PostURLTests(TestCase):
@@ -30,65 +18,70 @@ class PostURLTests(TestCase):
             text='Текстовый пост',
             group=cls.group
         )
+        cls.urls = [
+            f'/profile/{cls.post.author.username}/',
+            f'/group/{cls.group.slug}/',
+            '/',
+            f'/posts/{cls.post.id}/',
+        ]
 
     def setUp(self):
         # Создаем неавторизованный клиент
         self.guest_client = Client()
-        # Создаем пользователя
-        self.user = User.objects.create_user(username='HasNoName')
         # Создаем второй клиент
         self.authorized_client = Client()
         # Авторизуем пользователя
         self.authorized_client.force_login(self.user)
-
-    def test_home_url_exists_at_desired_location(self):
-        response = self.guest_client.get('/')
-        self.assertEqual(response.status_code, 200)
-
-    def test_task_group_url_exists_at_desired_location(self):
-        response = self.guest_client.get('/group/<slug>/')
-        self.assertEqual(response.status_code, 404)
-
-    def test_task_username_url_exists_at_desired_location(self):
-        response = self.guest_client.get('/profile/<username>/')
-        self.assertEqual(response.status_code, 404)
-
-    def test_task_postid_url_exists_at_desired_location(self):
-        response = self.guest_client.get('/posts/<post_id>/')
-        self.assertEqual(response.status_code, 404)
+    
+    def test_pages_urls_for_guest_users(self):
+        for address in PostURLTests.urls:
+            with self.subTest(address=address):
+                response = self.guest_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
+    
+    def test_pages_urls_for_authorized_users(self):
+        for address in PostURLTests.urls:
+            with self.subTest(address=address):
+                response = self.authorized_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_task_unexisting_url_exists_at_desired_location(self):
         response = self.guest_client.get('unexisting_page')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_task_auth_unexisting_url_exists_at_desired_location(self):
+        response = self.authorized_client.get('unexisting_page')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_task_create_url_exists_at_desired_location(self):
         response = self.authorized_client.get('/create/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_task_edit_url_exists_at_desired_location(self):
-        response = self.authorized_client.get('/posts/<post_id>/edit/')
-        self.assertEqual(response.status_code, 404)
+        response = self.authorized_client.get('/posts/1/edit/')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_task_createred_url_redirect_anonymous_on_admin_login(self):
         response = self.guest_client.get('/create/', follow=True)
         self.assertRedirects(
             response, '/auth/login/?next=/create/')
 
-    def test_task_editred_url_redirect_anonymous_on_admin_login(self):
-        response = self.guest_client.get('/posts/<post_id>/edit/')
-        self.assertEqual(response.status_code, 404)
+    def test_task_guest_createred_url_redirect_anonymous_on_admin_login(self):
+        response = self.guest_client.get('/posts/1/edit/', follow=True)
+        self.assertRedirects(
+            response, '/auth/login/?next=/posts/1/edit/')
 
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         templates_url_names = {
-            '/': 'posts/index.html',
-            # '/group/<slug>/': 'posts/group_list.html',
-            # '/profile/<username>/': 'posts/profile.html',
-            # '/posts/<post_id>/': 'posts/post_detail.html',
-            # '/posts/<post_id>/edit/': 'posts/create_post.html',
-            '/create/': 'posts/create_post.html'
+             '/': 'posts/index.html',
+            f'/group/{self.group.slug}/': 'posts/group_list.html',
+            f'/profile/{self.post.author}/': 'posts/profile.html',
+            f'/posts/{self.post.id}/': 'posts/post_detail.html',
+            f'/posts/{self.post.id}/edit/': 'posts/create_post.html',
+            '/create/': 'posts/create_post.html',
         }
         for url, template in templates_url_names.items():
-            with self.subTest(url=template):
+            with self.subTest(template=template):
                 response = self.authorized_client.get(url)
                 self.assertTemplateUsed(response, template)
