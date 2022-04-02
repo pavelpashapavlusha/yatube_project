@@ -22,7 +22,7 @@ class PostModelTest(TestCase):
         group = PostModelTest.group
         post = PostModelTest.post
         self.assertEqual(post.text[:15], str(post), str(group))
-    
+
     def test_verbose_name(self):
         post = PostModelTest.post
         field_verboses = {
@@ -48,7 +48,7 @@ class PostModelTest(TestCase):
             with self.subTest(value=value):
                 self.assertEqual(
                     group._meta.get_field(value).verbose_name, expected)
-    
+
     def test_help_text(self):
         """help_text в полях совпадает с ожидаемым."""
         post = PostModelTest.post
@@ -63,7 +63,7 @@ class PostModelTest(TestCase):
             with self.subTest(value=value):
                 self.assertEqual(
                     post._meta.get_field(value).help_text, expected)
-    
+
     def test_help_group_text(self):
         """help_text в полях совпадает с ожидаемым."""
         group = PostModelTest.group
