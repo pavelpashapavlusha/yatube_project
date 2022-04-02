@@ -21,7 +21,7 @@ class PostsViewsTests(TestCase):
         cls.post = Post.objects.create(
             text='PostTestText',
             author=cls.user_author,
-            group=Group.objects.get(id=1),
+            group=cls.group,
         )
 
     def setUp(self):
@@ -72,7 +72,7 @@ class PostsViewsTests(TestCase):
         response = self.authorized_client.get(reverse(
             'posts:post_detail', kwargs={'post_id': self.post.pk}))
         post = response.context['post']
-        expect = Post.objects.get(id=1)
+        expect = Post.objects.get(id=self.post.pk)
         self.assertEqual(post, expect)
 
     def test_profile_page_show_correct_context(self):
