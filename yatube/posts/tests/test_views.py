@@ -78,7 +78,7 @@ class PostsViewsTests(TestCase):
     def test_profile_page_show_correct_context(self):
         """Шаблон profile сформирован с правильным контекстом."""
         response = self.authorized_client.get(reverse(
-            'posts:profile', kwargs={'username': f'{self.post.author}'}))
+            'posts:profile', kwargs={'username': self.post.author}))
         paginator = Paginator(Post.objects.order_by('-author_id'), 10)
         expect = list(paginator.get_page(1).object_list)
         self.assertEqual(
