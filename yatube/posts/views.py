@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import PostForm, CommentForm
-from .models import Group, Post, User
+from .models import Group, Post, User, Follow
 
 LONG = 10
 
@@ -34,14 +34,20 @@ def group_posts(request, slug):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    posts = author.posts.all()
+    posts = author.posts.order_by('-pub_date')
+    author_count = posts.count()
     paginator = Paginator(posts, LONG)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    following = request.user.is_authenticated and Follow.objects.filter(
+        author=author,
+        user=request.user,
+    ).exists()
     context = {
-        'posts': posts,
         'author': author,
         'page_obj': page_obj,
+        'author_count': author_count,
+        'following': following,
     }
     return render(request, 'posts/profile.html', context)
 
@@ -104,3 +110,41 @@ def add_comment(request, post_id):
         comment.post = post
         comment.save()
     return redirect('posts:post_detail', post_id=post_id)
+
+
+@login_required
+def follow_index(request):
+    template = 'posts/follow.html'
+    authors_posts = Post.objects.filter(author__following__user=request.user)
+    paginator = Paginator(authors_posts, LONG)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'page_obj': page_obj,
+    }
+    return render(request, template, context)
+
+
+@login_required
+def profile_follow(request, username):
+    author = get_object_or_404(User, username=username)
+    if request.user != author:
+        if Follow.objects.filter(
+            author=author,
+            user=request.user
+        ).exists():
+            return redirect('posts:profile', username)
+        Follow.objects.create(user=request.user, author=author)
+    return redirect('posts:profile', username)
+
+
+@login_required
+def profile_unfollow(request, username):
+    author_id = get_object_or_404(User, username=username)
+    following = Follow.objects.filter(
+        author=author_id,
+        user=request.user
+    )
+    if following.exists():
+        following.delete()
+    return redirect('posts:profile', username)

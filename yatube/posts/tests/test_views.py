@@ -4,14 +4,14 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.core.cache import cache
 
-from ..models import Group, Post, User
+from ..models import Group, Post, User, Follow
 
 
 class PostsViewsTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user_author = User.objects.create_user(username='Test_author')
+        cls.author = User.objects.create_user(username='Test_author')
         cls.user = User.objects.create_user(username='Test_user')
         cls.group = Group.objects.create(
             title='TestGroup',
@@ -20,7 +20,7 @@ class PostsViewsTests(TestCase):
         )
         cls.post = Post.objects.create(
             text='PostTestText',
-            author=cls.user_author,
+            author=cls.author,
             group=cls.group,
         )
 
@@ -29,7 +29,7 @@ class PostsViewsTests(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(PostsViewsTests.user)
         self.authorized_client_author = Client()
-        self.authorized_client_author.force_login(PostsViewsTests.user_author)
+        self.authorized_client_author.force_login(PostsViewsTests.author)
 
     def test_pages_uses_correct_context(self):
         """URL-адрес использует соответствующий шаблон."""
@@ -156,3 +156,83 @@ class CacheTest(TestCase):
             cached_index,
             self.client.get(reverse('posts:posts')).content
         )
+
+
+class FollowTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user_author = User.objects.create_user(username='Noone_author')
+        cls.user_not_author = User.objects.create_user(username='Just_Noone')
+        cls.user_not_followed = User.objects.create_user(
+            username='Not_followed'
+        )
+        cls.group_used = Group.objects.create(
+            title='Test group used',
+            slug='Test_group_used'
+        )
+        cls.group_single_used = Group.objects.create(
+            title='Test group single used',
+            slug='Test_group_single_use'
+        )
+        Post.objects.create(
+            text='Test text',
+            group=cls.group_used,
+            author=cls.user_author,
+        )
+        cls.single_post = Post.objects.create(
+            text='Test text with single group',
+            group=cls.group_single_used,
+            author=cls.user_author,
+        )
+
+    def setUp(self):
+        self.guest_client = Client()
+        self.authorized_author = Client()
+        self.authorized_not_author = Client()
+        self.authorized_not_followed = Client()
+        self.authorized_author.force_login(self.user_author)
+        self.authorized_not_author.force_login(self.user_not_author)
+        self.authorized_not_followed.force_login(self.user_not_followed)
+
+    def test_follow_unfollow(self):
+        not_followed = Follow.objects.filter(
+            author=self.user_author.id,
+            user=self.user_not_author.id
+        ).exists()
+        self.assertFalse(not_followed)
+        self.authorized_not_author.get(
+            reverse('posts:profile_follow', args=[self.user_author])
+        )
+        followed = Follow.objects.filter(
+            author=self.user_author.id,
+            user=self.user_not_author.id
+        ).exists()
+        self.assertTrue(followed)
+        self.authorized_not_author.get(
+            reverse('posts:profile_unfollow', args=[self.user_author])
+        )
+        unfollowed = Follow.objects.filter(
+            author=self.user_author.id,
+            user=self.user_not_author.id
+        ).exists()
+        self.assertFalse(unfollowed)
+
+    def test_post_view_followed(self):
+        self.authorized_not_author.get(
+            reverse('posts:profile_follow', args=[self.user_author])
+        )
+        self.follow_post = Post.objects.create(
+            text='Follower post text',
+            author=self.user_author,
+        )
+        response_follower = self.authorized_not_author.get(
+            reverse('posts:follow_index')
+        )
+        objects = response_follower.context['page_obj'].object_list
+        self.assertIn(self.follow_post, objects)
+        response_not_follower = self.authorized_not_followed.get(
+            reverse('posts:follow_index')
+        )
+        objects = response_not_follower.context['page_obj'].object_list
+        self.assertNotIn(self.follow_post, objects)
