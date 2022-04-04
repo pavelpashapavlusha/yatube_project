@@ -1,7 +1,8 @@
 from xml.etree.ElementTree import Comment
+
 from django import forms
 
-from .models import Post, Comment
+from .models import Comment, Post
 
 
 class PostForm(forms.ModelForm):
@@ -17,7 +18,7 @@ class CommentForm(forms.ModelForm):
 
     def clean_subject(self):
         text = self.cleaned_data['text']
-        if text == '':
+        if not text:
             raise forms.ValidationError(
                 'Вы должны обязательно что-то написать',
                 params={'text': text},
